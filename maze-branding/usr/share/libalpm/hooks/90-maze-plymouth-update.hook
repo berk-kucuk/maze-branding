@@ -1,0 +1,11 @@
+[Trigger]
+Type = Path
+Operation = Install
+Operation = Upgrade
+Target = usr/share/plymouth/themes/*
+
+[Action]
+Description = Updating UKI and signing for Secure Boot...
+When = PostTransaction
+Exec = /bin/sh -c 'mkinitcpio -P && maze-sb-sign'
+Depends = mkinitcpio

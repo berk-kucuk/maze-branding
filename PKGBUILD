@@ -1,4 +1,4 @@
-# Maintainer: Berk Küçük <dev.berkkucukk@gmail.com>
+# Maintainer: Berk Küçük <berkkucukk@proton.me>
 #
 # maze-branding — the Maze Linux visual identity: Plymouth boot theme, SDDM
 # OLED login theme, wallpapers, logos and the fastfetch ASCII logo. Extracted
@@ -15,7 +15,7 @@
 #                                   never wanted on an installed system.
 
 pkgname=maze-branding
-pkgver=1.0.0
+pkgver=1.3.0
 pkgrel=1
 pkgdesc="Maze Linux branding — Plymouth theme, SDDM OLED theme, wallpapers, logos, fastfetch logo"
 arch=('any')
@@ -36,4 +36,5 @@ source=()
 package() {
   cp -a "${startdir}/maze-branding/etc" "${pkgdir}/etc"
   cp -a "${startdir}/maze-branding/usr" "${pkgdir}/usr"
+
 }
