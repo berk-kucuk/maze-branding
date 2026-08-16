@@ -7,5 +7,26 @@ Target = usr/share/plymouth/themes/*
 [Action]
 Description = Updating UKI and signing for Secure Boot...
 When = PostTransaction
-Exec = /bin/sh -c 'mkinitcpio -P && maze-sb-sign'
+# No-op unless maze-sb-sign exists. That script is written per-machine by
+# deploy-to-target.sh at INSTALL time, so it is absent while the ISO itself is
+# being built — and there the hook is meaningless anyway: there is no per-machine
+# MOK key to sign with, and `mkinitcpio -P` inside the pacstrap chroot runs the
+# archiso preset and dies with "Invalid option -k -- '/boot/vmlinuz-linux' must be
+# readable". pacman does not abort on a failed hook, so this only ever produced a
+# scary error in the middle of every ISO build. Bail out early instead; mkarchiso
+# builds the live initramfs itself.
+#
+# `mkinitcpio -P` alone is NOT enough and was the reason theme edits appeared to
+# have no effect at boot. /etc/kernel/install.conf ships layout=uki, so what the
+# firmware actually loads is the Unified Kernel Image under $ESP/EFI/Linux
+# (re-signed as EFI/BOOT/grubx64.efi) with the initramfs — and therefore the
+# Plymouth theme — baked inside it. The preset in /etc/mkinitcpio.d only defines
+# default_image/fallback_image, so `mkinitcpio -P` refreshes loose
+# /boot/initramfs-*.img files that nothing boots, leaving the UKI holding the old
+# theme; maze-sb-sign then just re-signs that stale UKI. `kernel-install add` is
+# what rebuilds it (via 50-mkinitcpio.install + 60-ukify.install), exactly as
+# 85-maze-kernel-install.hook does for kernel upgrades. Loose images are still
+# refreshed so the fallback entry does not drift out of sync.
+Exec = /bin/sh -c 'command -v maze-sb-sign >/dev/null 2>&1 || exit 0; mkinitcpio -P; for d in /usr/lib/modules/*/; do [ -f "${d}vmlinuz" ] || continue; kver=${d%/}; kver=${kver##*/}; kernel-install add "$kver" "${d}vmlinuz" || exit 1; done; maze-sb-sign'
 Depends = mkinitcpio
+Depends = systemd

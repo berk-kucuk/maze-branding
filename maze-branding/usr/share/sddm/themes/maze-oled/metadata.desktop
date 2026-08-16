@@ -6,7 +6,6 @@ License=MIT
 Type=sddm-theme
 Version=1.0
 Website=https://mazelinux.berkkucukk.com.tr
-Screenshot=preview.png
 MainScript=Main.qml
 ConfigFile=theme.conf
 Theme-Id=maze-oled
