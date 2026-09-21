@@ -15,7 +15,7 @@
 #                                   never wanted on an installed system.
 
 pkgname=maze-branding
-pkgver=1.5.0
+pkgver=1.6.1
 pkgrel=1
 pkgdesc="Maze Linux branding — Plymouth theme, SDDM OLED theme, wallpapers, logos, fastfetch logo"
 arch=('any')

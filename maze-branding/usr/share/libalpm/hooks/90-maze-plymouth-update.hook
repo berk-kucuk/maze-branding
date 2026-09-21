@@ -7,26 +7,43 @@ Target = usr/share/plymouth/themes/*
 [Action]
 Description = Updating UKI and signing for Secure Boot...
 When = PostTransaction
-# No-op unless maze-sb-sign exists. That script is written per-machine by
-# deploy-to-target.sh at INSTALL time, so it is absent while the ISO itself is
-# being built — and there the hook is meaningless anyway: there is no per-machine
-# MOK key to sign with, and `mkinitcpio -P` inside the pacstrap chroot runs the
-# archiso preset and dies with "Invalid option -k -- '/boot/vmlinuz-linux' must be
-# readable". pacman does not abort on a failed hook, so this only ever produced a
-# scary error in the middle of every ISO build. Bail out early instead; mkarchiso
-# builds the live initramfs itself.
+# No-op unless this machine has a per-machine MOK key.
+#
+# The guard used to be `command -v maze-sb-sign`, on the reasoning that the
+# signer was written per-machine by deploy-to-target.sh at INSTALL time and so
+# could not exist during an ISO build. That stopped being true when the Secure
+# Boot layer was packaged: maze-sb-sign now ships in maze-secureboot, so it IS
+# present in the build chroot, the guard passed, and every ISO build printed the
+# exact failure the old comment predicted — `mkinitcpio -P` running the archiso
+# preset and dying with "Invalid option -k -- '/boot/vmlinuz-linux' must be
+# readable", plus a wasted second pass over both UKIs.
+#
+# The MOK key is the honest test: it is generated per-machine at install time and
+# never exists in a build chroot, and without it there is nothing to sign anyway.
+# mkarchiso builds the live initramfs itself.
 #
 # `mkinitcpio -P` alone is NOT enough and was the reason theme edits appeared to
 # have no effect at boot. /etc/kernel/install.conf ships layout=uki, so what the
 # firmware actually loads is the Unified Kernel Image under $ESP/EFI/Linux
 # (re-signed as EFI/BOOT/grubx64.efi) with the initramfs — and therefore the
-# Plymouth theme — baked inside it. The preset in /etc/mkinitcpio.d only defines
-# default_image/fallback_image, so `mkinitcpio -P` refreshes loose
-# /boot/initramfs-*.img files that nothing boots, leaving the UKI holding the old
-# theme; maze-sb-sign then just re-signs that stale UKI. `kernel-install add` is
-# what rebuilds it (via 50-mkinitcpio.install + 60-ukify.install), exactly as
-# 85-maze-kernel-install.hook does for kernel upgrades. Loose images are still
-# refreshed so the fallback entry does not drift out of sync.
-Exec = /bin/sh -c 'command -v maze-sb-sign >/dev/null 2>&1 || exit 0; mkinitcpio -P; for d in /usr/lib/modules/*/; do [ -f "${d}vmlinuz" ] || continue; kver=${d%/}; kver=${kver##*/}; kernel-install add "$kver" "${d}vmlinuz" || exit 1; done; maze-sb-sign'
+# Plymouth theme — baked inside it. `kernel-install add` is what rebuilds it (via
+# 50-mkinitcpio.install + 60-ukify.install), exactly as 85-maze-kernel-install.hook
+# does for kernel upgrades.
+#
+# `mkinitcpio -P` used to run here as well, to keep the loose
+# /boot/initramfs-*.img in step "so the fallback entry does not drift". It has
+# been removed, for two reasons:
+#
+#   * There is no fallback entry to drift. Maze boots shim -> grubx64.efi (a
+#     UKI); there is no BLS loader entry and no menu, so nothing on this system
+#     ever loads a loose initramfs. /etc/mkinitcpio.d/linux.preset says the same
+#     thing at length and ships PRESETS=() precisely to stop generating them.
+#
+#   * It printed `==> ERROR: No presets found in /etc/mkinitcpio.d` in the middle
+#     of a boot-critical hook on every upgrade. The `|| true` meant it changed
+#     nothing, but an ERROR line there is indistinguishable from a real failure
+#     to whoever is reading the upgrade output — and reading that output is
+#     exactly what this project asks users to do.
+Exec = /bin/sh -c '[ -r /var/lib/maze-secureboot/MOK.key ] || exit 0; for d in /usr/lib/modules/*/; do [ -f "${d}vmlinuz" ] || continue; kver=${d%/}; kver=${kver##*/}; kernel-install add "$kver" "${d}vmlinuz" || exit 1; done; maze-sb-sign'
 Depends = mkinitcpio
 Depends = systemd
