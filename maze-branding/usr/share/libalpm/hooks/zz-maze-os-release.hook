@@ -1,0 +1,26 @@
+# Maze Linux (maze-branding) — keep /usr/lib/os-release saying "Maze Linux".
+#
+# /usr/lib/os-release belongs to the `filesystem` package, so every filesystem
+# upgrade silently puts Arch's copy back: KDE's "About this System", fastfetch
+# and `maze-doctor` ("os-release does not identify as Maze") all revert. The ISO
+# build and the installer used to be the only places that wrote Maze's copy, so
+# no already-installed machine ever got it back.
+#
+# Also triggered by this package itself, so installing or upgrading
+# maze-branding repairs a machine that has already been reverted.
+#
+# Named zz- on purpose: pacman runs hooks in name order across /etc and /usr,
+# and installs made from an older ISO carry /etc/pacman.d/hooks/maze-os-release.hook
+# (copying an older staged file). Sorting last makes this packaged copy win.
+[Trigger]
+Type = Package
+Operation = Install
+Operation = Upgrade
+Target = filesystem
+Target = maze-branding
+
+[Action]
+Description = Applying Maze Linux branding to /usr/lib/os-release...
+When = PostTransaction
+Depends = coreutils
+Exec = /usr/bin/cp -f /usr/share/maze/os-release /usr/lib/os-release

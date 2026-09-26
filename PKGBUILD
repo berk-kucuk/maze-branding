@@ -16,7 +16,7 @@
 
 pkgname=maze-branding
 pkgver=1.6.1
-pkgrel=1
+pkgrel=4
 pkgdesc="Maze Linux branding — Plymouth theme, SDDM OLED theme, wallpapers, logos, fastfetch logo"
 arch=('any')
 url="https://mazelinux.berkkucukk.com.tr"
@@ -30,6 +30,18 @@ optdepends=(
 # The SDDM theme selection is admin-tunable; preserve edits across upgrades.
 backup=(
   'etc/sddm.conf.d/20-maze-theme.conf'
+  # ── Adopted from the ISO's airootfs (2026-09) ──────────────────────────────
+  # These used to exist only in the live image, so installed machines carried
+  # them UNOWNED and no update ever reached them. They are in backup=() so the
+  # takeover is silent: pacman does not treat an existing unowned file that the
+  # package lists as a backup as a conflict — an identical copy is simply
+  # adopted, a locally edited one is kept and the packaged one lands as .pacnew.
+  # Without this, `pacman -Syu` on every installed Maze would stop with
+  # "exists in filesystem" until the user ran --overwrite by hand.
+  'usr/share/icons/hicolor/128x128/apps/mazelinux.png'
+  'usr/share/icons/hicolor/256x256/apps/mazelinux.png'
+  'usr/share/icons/hicolor/512x512/apps/mazelinux.png'
+  'usr/share/sddm/themes/breeze/theme.conf.user'
 )
 source=()
 
