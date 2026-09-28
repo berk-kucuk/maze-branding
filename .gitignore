@@ -2,3 +2,8 @@
 /src/
 *.pkg.tar.*
 *.log
+
+# Wallpaper candidates: render output for picking, not sources. Chosen ones are
+# copied into maze-branding/usr/share/wallpapers/; the generators stay tracked.
+design/wallpapers/adaylar*/
+__pycache__/
