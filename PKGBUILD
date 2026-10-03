@@ -1,7 +1,9 @@
 # Maintainer: Berk Küçük <dev.berkkucukk@gmail.com>
 #
 # maze-branding — the Maze Linux visual identity: Plymouth boot theme, SDDM
-# OLED login theme, wallpapers, logos and the fastfetch ASCII logo. Extracted
+# OLED login theme, wallpapers, logos and the fastfetch ASCII logo — and, through
+# maze-wallpaper, the desktop wallpaper itself (live wallpapers, active blur,
+# media mode). Extracted
 # from the ISO's airootfs overlay into a pacman package.
 #
 # Payload lives verbatim under ./maze-branding/ (a mirror of the target
@@ -16,12 +18,16 @@
 
 pkgname=maze-branding
 pkgver=1.7.0
-pkgrel=1
+pkgrel=2
 pkgdesc="Maze Linux branding — Plymouth theme, SDDM OLED theme, wallpapers, logos, fastfetch logo"
 arch=('any')
 url="https://mazelinux.berkkucukk.com.tr"
 license=('GPL3')
-depends=()
+# maze-wallpaper is the Maze desktop's wallpaper: its Plasma plugin
+# (com.mazelinux.wallpaper) is what maze-plasma-config's skel and layouts and
+# maze-tools' maze-apply-wallpaper put on every screen, and its app is how the
+# wallpapers shipped here are chosen.
+depends=('maze-wallpaper')
 optdepends=(
   'plymouth: boot splash theme'
   'sddm: OLED login theme'

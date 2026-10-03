@@ -92,3 +92,9 @@ maze-branding/
   package (a package owning that path would file-conflict with `filesystem`).
 - **`10-maze-autologin.conf`** — live-medium only (auto-logs the live user in);
   never wanted on an installed system, so it stays ISO build glue.
+
+## License
+
+Copyright © 2026 Berk Küçük
+
+Released under the GNU General Public License v3.0 — see [LICENSE](LICENSE).
