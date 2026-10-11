@@ -9,7 +9,7 @@ into a pacman package.
 | ---- | -------- |
 | `usr/share/plymouth/themes/maze/` | Plymouth boot-splash theme |
 | `usr/share/sddm/themes/maze-oled/` | SDDM OLED login theme |
-| `usr/share/wallpapers/Maze*` | Wallpaper set (`Maze`, `Maze1…9`, `MazeOLED`) |
+| `usr/share/wallpapers/Maze*` | Wallpaper set: stills, animated GIFs and `(live)` video loops for Maze Wallpaper |
 | `usr/share/pixmaps/maze-logo.png`, `maze-simple-logo.png` | Shared logos used by the Maze GUI apps and `.desktop` icons |
 | `usr/share/pixmaps/maze-user-avatar.png` | Default user avatar |
 | `usr/share/maze/fastfetch-logo.txt` | Fastfetch ASCII logo |
@@ -17,6 +17,35 @@ into a pacman package.
 
 `maze-tools` depends on this package for the shared `maze-*-logo.png` files (they
 used to be duplicated; they now live here to avoid a file conflict).
+
+## OLED stills
+
+`Maze-Prism`, `Maze-Flow`, `Maze-Trace`, `Maze-Field`, `Maze-Signal` and
+`Maze-Dawn` are procedural 2560×1440 stills on a true-black (0,0,0)
+background. They need no Blender: the mark is rebuilt as vector geometry from
+`design/wallpapers/blender/mark.json` and every effect is driven by its exact
+signed distance field.
+
+```sh
+cd design/wallpapers/oled
+python3 oled.py out --scale 0.5          # quick half-size previews
+python3 oled.py out [name ...]           # final 2560x1440 renders
+```
+
+## Live wallpapers
+
+The `(live)` packages (`Maze-Pulse`, `Maze-Rain`, `Maze-Orbit`, `Maze-Scan`,
+`Maze-Depth`, `Maze-Wave`, `Maze-Dust`, `Maze-Neon`,
+`Maze-Caustics`, `Maze-Weave`, `Maze-Radar`) are seamless 1920×1080 H.264
+loops. Video is decoded by the GPU and paused by the plugin whenever a window
+covers the desktop, so it is the lightest way to animate the wallpaper. They
+are generated, not hand-made:
+
+```sh
+cd design/wallpapers/live
+python3 live2d.py ../adaylar-live          # review stills + contact sheet
+python3 render_live.py [name ...]          # videos -> maze-branding/usr/share/wallpapers
+```
 
 ## Installation
 

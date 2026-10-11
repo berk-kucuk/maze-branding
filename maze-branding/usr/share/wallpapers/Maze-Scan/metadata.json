@@ -1,0 +1,12 @@
+{
+    "KPlugin": {
+        "Authors": [
+            {
+                "Name": "Maze Linux"
+            }
+        ],
+        "Id": "Maze-Scan",
+        "License": "CC-BY-SA-4.0",
+        "Name": "Maze Scan (live)"
+    }
+}

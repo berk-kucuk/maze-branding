@@ -1,0 +1,12 @@
+{
+    "KPlugin": {
+        "Authors": [
+            {
+                "Name": "Maze Linux"
+            }
+        ],
+        "Id": "Maze-Depth",
+        "License": "CC-BY-SA-4.0",
+        "Name": "Maze Depth (live)"
+    }
+}
