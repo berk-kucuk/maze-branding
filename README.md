@@ -35,7 +35,7 @@ python3 oled.py out [name ...]           # final 2560x1440 renders
 ## Live wallpapers
 
 The `(live)` packages (`Maze-Pulse`, `Maze-Rain`, `Maze-Orbit`, `Maze-Scan`,
-`Maze-Depth`, `Maze-Wave`, `Maze-Dust`, `Maze-Neon`,
+`Maze-Depth`, `Maze-Wave`, `Maze-Dust-Live`, `Maze-Neon`,
 `Maze-Caustics`, `Maze-Weave`, `Maze-Radar`) are seamless 1920×1080 H.264
 loops. Video is decoded by the GPU and paused by the plugin whenever a window
 covers the desktop, so it is the lightest way to animate the wallpaper. They
@@ -46,6 +46,10 @@ cd design/wallpapers/live
 python3 live2d.py ../adaylar-live          # review stills + contact sheet
 python3 render_live.py [name ...]          # videos -> maze-branding/usr/share/wallpapers
 ```
+
+Dust also ships as a still: `Maze-Dust` ("Maze Dust") is a 2560×1440 PNG of
+the same design (`python3 live2d.py <out> dust`), and its video lives in
+`Maze-Dust-Live`.
 
 ## Installation
 

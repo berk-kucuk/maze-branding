@@ -45,10 +45,16 @@ def init(name, cycles, frames):
     _job = (L.DESIGNS[name][0], cycles, frames)
 
 
+# Designs that also ship as a still: the still owns Maze-<Name>, the video
+# moves to Maze-<Name>-Live.
+HAS_STILL = {"dust"}
+
+
 def build(name):
     secs, cycles, title = L.LOOPS[name]
     frames = int(round(secs * cycles * args.fps))
-    pkg = os.path.join(PAYLOAD, f"Maze-{title}")
+    pkg_id = f"Maze-{title}-Live" if name in HAS_STILL else f"Maze-{title}"
+    pkg = os.path.join(PAYLOAD, pkg_id)
     img_dir = os.path.join(pkg, "contents", "images")
     os.makedirs(img_dir, exist_ok=True)
     out = os.path.join(img_dir, f"{L.W}x{L.H}.mp4")
@@ -77,7 +83,7 @@ def build(name):
     from PIL import Image
     Image.frombytes("RGB", (L.W, L.H), first).save(os.path.join(pkg, "contents", "screenshot.png"), optimize=True)
     with open(os.path.join(pkg, "metadata.json"), "w") as f:
-        json.dump({"KPlugin": {"Authors": [{"Name": "Maze Linux"}], "Id": f"Maze-{title}",
+        json.dump({"KPlugin": {"Authors": [{"Name": "Maze Linux"}], "Id": pkg_id,
                                "License": "CC-BY-SA-4.0", "Name": f"Maze {title} (live)"}}, f, indent=4)
         f.write("\n")
     mb = os.path.getsize(out) / 1e6
